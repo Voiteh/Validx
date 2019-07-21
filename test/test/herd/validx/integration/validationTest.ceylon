@@ -1,7 +1,7 @@
 import ceylon.test {
 	test
 }
-import herd.validx.core {
+import herd.validx {
 
 	Validx,
 	Single,
