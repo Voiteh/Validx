@@ -1,78 +1,82 @@
 import ceylon.test {
-	test
+	test,
+	assertThatException
 }
 import herd.validx {
-
-	Validx,
 	Single,
-	Multi
+	Multi,
+	validate,
+	ValidationError
 }
 
-void throwing(String param){
+void throwing(String param) {
 	throw Exception("INVALID ``param``");
 }
-
-void nonThrowing(String param){}
-
-shared test void whenProvidedParams_then_shouldValidate(){
-	value validate = Validx{
-		verifications = {
-			Single(`nonThrowing`,["Abc"])
+void nonThrowing(String param) {}
+shared test
+void whenProvidedParams_then_shouldValidate() {
+	validate {
+		validations = {
+			Single(`nonThrowing`, ["Abc"])
 		};
-	}.validate;
-	assert(!validate exists);
+	};
 }
 
-shared test void whenProvidedParams_then_shouldInvalidate(){
-
- 	assert (exists validate = Validx{
-		verifications = {
-			Single(`throwing`,["bleh"])
-		};
-	}.validate);
-	assert(exists error=validate.errors.first);
-}
-
-shared test void whenProvidedThroughExtractor_then_shouldInvalidate(){
+shared test
+void whenProvidedParams_then_shouldInvalidate() {
 	
-	assert (exists validate = Validx{
-		verifications = {
-			Single.extracted(`throwing`,()=>["bleh"])
-			
-		};
-	}.validate);
-	assert(exists error=validate.errors.first);
+	assertThatException {
+		() => validate {
+				validations = {
+					Single(`throwing`, ["bleh"])
+				};
+			};
+	}.hasType(`ValidationError`);
 }
 
-shared test void whenProvidedStream_then_shouldInvalidate(){
+shared test
+void whenProvidedThroughExtractor_then_shouldInvalidate() {
+	assertThatException {
+		() => validate {
+				validations = {
+					Single.extracted(`throwing`, () => ["bleh"])
+				};
+			};
+	}.hasType(`ValidationError`);
+}
+
+shared test
+void whenProvidedStream_then_shouldInvalidate() {
 	
-	assert (exists validate = Validx{
-		verifications = {
-			Multi(`throwing`,{["bleh"],["blah"]})	
+	assertThatException {
+		() => validate {
+			validations = {
+				Multi(`throwing`, { ["bleh"], ["blah"] })
+			};
 		};
-	}.validate);
-	assert(exists error=validate.errors.first);
+	}.hasType(`ValidationError`);
 }
 
-shared test void whenProvidedStreamThroughExctractor_then_shouldInvalidate(){
+shared test
+void whenProvidedStreamThroughExctractor_then_shouldInvalidate() {
 	
-	assert (exists validate = Validx{
-		verifications = {
-			Multi.extracted(`throwing`,()=>{["bleh"],["blah"]})
-			
+	assertThatException {
+		() => validate {
+			validations = {
+				Multi.extracted(`throwing`, () => { ["bleh"], ["blah"] })
+			};
 		};
-	}.validate);
-	assert(validate.errors.first exists);
-	assert(validate.errors.rest.first exists);
+	}.hasType(`ValidationError`);
 }
-shared test void whenProvidedMixed_then_should_invalidate(){
-	assert (exists validate = Validx{
-		verifications = {
-			Single(`nonThrowing`, ["blej"]),
-			Multi(`throwing`,{["bleh"],["blah"]})
+shared test
+void whenProvidedMixed_then_should_invalidate() {
+	assertThatException {
+		() => validate {
+			validations = {
+				Single(`nonThrowing`, ["blej"]),
+				Multi(`throwing`, { ["bleh"], ["blah"] })
+			};
 		};
-	}.validate);
-	assert(validate.errors.first exists);
-	assert(validate.errors.rest.first exists);
+	}.hasType(`ValidationError`);
+	
 }
-

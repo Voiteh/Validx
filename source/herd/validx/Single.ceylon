@@ -3,24 +3,38 @@ import ceylon.language.meta.model {
 	Function
 }
 
-shared class  Single<Parameters> satisfies Verification given Parameters satisfies Anything[] {
+"
+ Single verification, provides ability to execute once over all provided parameters. 
+ Use default constructor if  [[Parameters]] are provided eagerly, else [[extracted]] to extract them lazily,
+  when [[verify]] is called rather than durring [[Single]] creation. 
+ "
+shared class  Single<Parameters> satisfies Validation given Parameters satisfies Anything[] {
 
-	shared Function<Anything,Parameters>reference; 
+	"Reference to valdiation function"
+	shared Function<Anything,Parameters>reference;
+	"Parameters provided through extrator" 
 	Parameters() extractor;
 	
 	shared new (
-		Function<Anything,Parameters> reference, 
+		"Reference to valdiation function"
+		Function<Anything,Parameters> reference,
+		"Eagerly provided parameters" 
 		Parameters parameters
 	){
 		this.reference=reference;
 		this.extractor=() => parameters;
 	}
 	
-	shared new extracted(Function<Anything,Parameters>  reference, Parameters() extractor){
+	shared new extracted(
+		"Reference to valdiation function"
+		Function<Anything,Parameters>  reference,
+		"Eagerly provided parameters"
+		Parameters() extractor
+	 ){
 		this.reference=reference;
 		this.extractor=extractor; 
 	}
-	
+
 	shared actual Exception? verify {
 		value parameters= extractor();
 			try{
