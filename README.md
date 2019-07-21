@@ -5,12 +5,12 @@ Simple validation framework using function references to execute validation proc
 Example:
 ```ceylon	
   void someValidation(String param) {
-    throw Exception(\"INVALID \`\`param\`\`\");
+    throw Exception("INVALID ``param``");
   }
 
   validate {
     validations = {
-      Single(\`someValidation`, [\"Abc\"])
+      Single(`someValidation`, ["Abc"])
     };
   };
 ```
